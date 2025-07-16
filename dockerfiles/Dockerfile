@@ -1,11 +1,10 @@
-FROM bellsoft/liberica-openjdk-debian:24 as builder
-
+FROM bellsoft/liberica-native-image-kit-container:jdk-24-nik-24-musl as builder
+RUN apk add --no-cache nodejs npm
 WORKDIR /app
 ADD . /app/neurowatch
-RUN cd neurowatch && ./mvnw -Pproduction clean package
+RUN cd neurowatch && ./mvnw -Pproduction -Pnative native:compile
 
-FROM bellsoft/liberica-openjre-debian:24
+FROM bellsoft/alpaquita-linux-base:musl
 WORKDIR /app
-COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["/app/app"]
+COPY --from=builder /app/neurowatch/target/native/neurowatch /app/app
