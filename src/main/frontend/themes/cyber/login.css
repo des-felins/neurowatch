@@ -1,0 +1,32 @@
+/* ─── Login view container ─────────────────────────────── */
+.login-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Subtle cyan glow fading into deep black */
+    background: radial-gradient(circle at 50% 20%,
+    rgba(0, 229, 255, 0.12) 0%,
+    #0d0d0d 70%);
+}
+
+/* ─── Card that wraps the VaadinLoginForm ──────────────── */
+.login-view .content-div {
+    display: flex;
+    border-radius: var(--lumo-border-radius-s);
+
+    /* neon outline + soft shadow */
+    border: 1px solid var(--lumo-primary-color-50pct);
+    box-shadow:
+            0 0 10px 2px var(--lumo-primary-color-10pct),
+            var(--lumo-box-shadow-s);
+
+    background: #131313;           /* slightly lighter than body   */
+    overflow: clip;
+    padding: var(--lumo-space-m);
+}
+
+/* ─── Optional: glow on hover for the login button ─────── */
+vaadin-login-form-wrapper vaadin-button:hover::part(label) {
+    text-shadow: 0 0 6px var(--lumo-primary-color);
+}

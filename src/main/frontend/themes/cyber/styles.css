@@ -1,0 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+@import url("login.css");
+
+/*  Base page  */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #0d0d0d;        /* deep-black cyber backdrop   */
+    color:       #e0e0e0;        /* light grey foreground       */
+    font-family: "Share Tech Mono", "Lucida Console", monospace;
+}
+
+/*  Lumo design-tokens override  */
+:root {
+    --lumo-base-color:     #0d0d0d;
+    --lumo-body-text-color:#e0e0e0;
+    --lumo-header-text-color:#f5f5f5;
+
+    /* neon-primary accent */
+    --lumo-primary-color:     #00e5ff;   /* cyan */
+    --lumo-primary-color-50pct: rgba(0,229,255,.5);
+    --lumo-primary-color-10pct: rgba(0,229,255,.1);
+
+    /* grid row hover / selected */
+    --lumo-shade-5pct:   rgba(0,229,255,.05);
+    --lumo-shade-10pct:  rgba(0,229,255,.10);
+}
+
+/*  Vaadin Grid tweaks  */
+vaadin-grid::part(header-cell),
+vaadin-grid::part(body-cell) {
+    background: #131313;
+}
+vaadin-grid::part(row):hover {
+    background: rgba(0,229,255,.05);
+}
+
+/* Buttons: neon glow on hover */
+vaadin-button:hover::part(label) {
+    text-shadow: 0 0 6px #00e5ff;
+}

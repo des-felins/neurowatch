@@ -1,0 +1,41 @@
+services:
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=neurowatch
+    networks:
+      - neurowatch_net
+    ports:
+      - "27017:27017"
+    command: "mongod --quiet --logpath /dev/null "
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  neurowatch:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile${SUFFIX}
+      args:
+        project: neurowatch
+      network: host
+    networks:
+      - neurowatch_net
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongodb
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=neurowatch
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+networks:
+  neurowatch_net:
