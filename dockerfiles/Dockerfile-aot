@@ -1,0 +1,23 @@
+FROM bellsoft/liberica-runtime-container:jdk-24-cds-musl as builder
+RUN apk add --no-cache nodejs npm
+WORKDIR /app
+ADD . /app/neurowatch
+RUN cd neurowatch && ./mvnw -Pproduction clean package
+
+FROM bellsoft/liberica-runtime-container:jre-24-cds-musl as optimizer
+WORKDIR /app
+COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
+RUN java -Djarmode=tools -jar /app/app.jar extract --layers --destination extracted
+
+FROM bellsoft/liberica-runtime-container:jre-24-cds-slim-musl
+
+WORKDIR /app
+ENTRYPOINT ["java", "-Dspring.aot.enabled=true", "-XX:AOTCache=app.aot", "-jar", "/app/app.jar"]
+COPY --from=optimizer /app/extracted/dependencies/ ./
+COPY --from=optimizer /app/extracted/spring-boot-loader/ ./
+COPY --from=optimizer /app/extracted/snapshot-dependencies/ ./
+COPY --from=optimizer /app/extracted/application/ ./
+EXPOSE 8080
+
+RUN java -Dspring.aot.enabled=true -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf -Dspring.context.exit=onRefresh -jar /app/app.jar
+RUN java -Dspring.aot.enabled=true -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot -jar /app/app.jar
