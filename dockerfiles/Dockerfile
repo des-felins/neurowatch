@@ -1,11 +1,5 @@
-FROM bellsoft/liberica-runtime-container:jdk-24-musl as builder
-RUN apk add --no-cache nodejs npm
-WORKDIR /app
-ADD . /app/neurowatch
-RUN cd neurowatch && ./mvnw -Pproduction clean package
+FROM bellsoft/liberica-runtime-container:jdk-21-crac-cds-musl
 
-FROM bellsoft/liberica-runtime-container:jre-24-slim-musl
 WORKDIR /app
-COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+COPY ./target/neurowatch-0.0.1-SNAPSHOT-spring-boot.jar app.jar
+ENTRYPOINT ["java", "-XX:CRaCCheckpointTo=/app/checkpoint", "-jar", "/app/app.jar"]
