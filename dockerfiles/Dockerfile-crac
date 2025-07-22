@@ -4,8 +4,8 @@ WORKDIR /app
 ADD . /app/neurowatch
 RUN cd neurowatch && ./mvnw -Pproduction clean package
 
-FROM bellsoft/liberica-runtime-container:jdk-21-crac-cds-musl
+FROM bellsoft/liberica-runtime-container:jre-21-crac-cds-stream-musl
 
 WORKDIR /app
 COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
-ENTRYPOINT ["java", "-XX:CRaCCheckpointTo=/app/checkpoint", "-XX:MaxRAMPercentage=80.0", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-XX:CRaCCheckpointTo=/app/checkpoint", "-jar", "/app/app.jar"]
