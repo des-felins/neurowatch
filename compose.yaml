@@ -10,6 +10,8 @@ services:
       - neurowatch_net
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
     command: "mongod --quiet --logpath /dev/null "
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
@@ -24,7 +26,6 @@ services:
       dockerfile: ./dockerfiles/Dockerfile${SUFFIX}
       args:
         project: neurowatch
-      network: host
     networks:
       - neurowatch_net
     ports:
@@ -33,9 +34,16 @@ services:
       - SPRING_DATA_MONGODB_HOST=mongodb
       - SPRING_DATA_MONGODB_PORT=27017
       - SPRING_DATA_MONGODB_DATABASE=neurowatch
+      - JAVA_TOOL_OPTIONS=-Dsun.net.inetaddr.ttl=0
     depends_on:
       mongodb:
         condition: service_healthy
+    cap_add:
+      - SYS_PTRACE
+      - CHECKPOINT_RESTORE
+
+volumes:
+  mongodb_data:
 
 networks:
   neurowatch_net:
