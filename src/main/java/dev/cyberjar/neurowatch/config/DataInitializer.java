@@ -26,7 +26,7 @@ public class DataInitializer {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
-    @Value("${app.create-test-users:true}")
+    @Value("${app.create-test-users}")
     private boolean createTestUsers;
 
     @Bean
@@ -77,6 +77,9 @@ public class DataInitializer {
 
     private void insertDataIntoCiviliansAndLogs(CivilianRepository civilianRepository,
                                                 ImplantMonitoringLogRepository logRepository) {
+
+        civilianRepository.deleteAll();
+        logRepository.deleteAll();
 
         List<Implant> implants = new ArrayList<>();
         List<Civilian> civilians = new ArrayList<>();
@@ -135,7 +138,7 @@ public class DataInitializer {
                         powerUsage + i,
                         cpuUsage + i,
                         neuralLatency + i,
-                        new Point(4.899, 52.372)); //Coordinates for Amsterdam longitude/latitude
+                        new Point(-74.0060, 40.7128)); //Coordinates for New York longitude/latitude
 
                 logs.add(implantMonitoringLog);
             }
