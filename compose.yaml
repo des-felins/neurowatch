@@ -38,12 +38,10 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-    cap_add:
-      - SYS_PTRACE
-      - CHECKPOINT_RESTORE
 
 volumes:
   mongodb_data:
 
 networks:
   neurowatch_net:
+    external: true

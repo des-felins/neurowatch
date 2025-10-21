@@ -48,6 +48,4 @@ public class LoginView extends Main implements BeforeEnterObserver {
             login.setError(true);
         }
     }
-
-
 }

@@ -13,7 +13,6 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -40,7 +39,10 @@ import java.util.Optional;
 public class CivilianView extends VerticalLayout {
 
     private final CivilianService civilianService;
+
     private final Grid<Civilian> grid = new Grid<>(Civilian.class, false);
+
+    private CallbackDataProvider<Civilian, Void> dataProvider;
 
     private final IntegerField lotGte = new IntegerField("Lot ≥");
     private final IntegerField lotLte = new IntegerField("Lot ≤");
@@ -50,6 +52,9 @@ public class CivilianView extends VerticalLayout {
 
     public CivilianView(CivilianService civilianService) {
         this.civilianService = civilianService;
+
+        dataProvider = buildProvider();
+
         configureGrid();
         configureFilters();
 
@@ -67,7 +72,7 @@ public class CivilianView extends VerticalLayout {
 
     private void configureGrid() {
 
-        grid.setItems(buildProvider());
+        grid.setItems(dataProvider);
 
         grid.addColumn(Civilian::getNationalId).setHeader("National ID");
         grid.addColumn(Civilian::getLegalName).setHeader("Legal Name");
@@ -95,13 +100,13 @@ public class CivilianView extends VerticalLayout {
 
 
         Component detailsPanel = buildDetailsPanel(civilian);
-        Component editPanel    = buildEditForm(civilian, dialog);
-        Component addPanel     = buildAddImplantForm(civilian, dialog);
+        Component editPanel = buildEditForm(civilian, dialog);
+        Component addPanel = buildAddImplantForm(civilian, dialog);
 
         Map<Tab, Component> map = Map.of(
                 detailsTab, detailsPanel,
-                editTab,    editPanel,
-                addTab,     addPanel
+                editTab, editPanel,
+                addTab, addPanel
         );
 
         Div pages = new Div(detailsPanel, editPanel, addPanel);
@@ -272,7 +277,7 @@ public class CivilianView extends VerticalLayout {
     }
 
     private void refresh() {
-        grid.setItems(buildProvider());
+        dataProvider.refreshAll();
     }
 
 
