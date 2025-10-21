@@ -161,7 +161,7 @@ public class CivilianView extends VerticalLayout {
     private Component buildEditForm(Civilian civilian, Dialog dialog) {
 
         TextField name = new TextField("Legal name");
-        name.setValue(civilian.getLegalName());
+        //name.setValue(civilian.getLegalName());
 
         Checkbox criminal = new Checkbox("Criminal record", civilian.isCriminalRecord());
         Checkbox surveil = new Checkbox("Under surveillance", civilian.isUnderSurveillance());
