@@ -7,7 +7,7 @@ RUN cd neurowatch && ./mvnw -Pproduction clean package
 FROM bellsoft/liberica-runtime-container:jre-24-musl as optimizer
 WORKDIR /app
 COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
-RUN java -Djarmode=tools -jar /app/app.jar extract --layers --launcher
+RUN java -Djarmode=tools -jar /app/app.jar extract --layers --destination extracted
 
 
 FROM bellsoft/liberica-runtime-container:jre-24-slim-musl
@@ -18,4 +18,4 @@ COPY --from=optimizer /app/app/spring-boot-loader/ ./
 COPY --from=optimizer /app/app/snapshot-dependencies/ ./
 COPY --from=optimizer /app/app/application/ ./
 EXPOSE 8080
-ENTRYPOINT ["java","org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -1,7 +1,9 @@
 package dev.cyberjar.neurowatch;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.boot.SpringApplication;
@@ -12,6 +14,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories
 @Theme(value = "cyber", variant = Lumo.DARK)
 @PWA(name = "NeuroWatch", shortName = "NW")
+@Push(PushMode.AUTOMATIC)
 public class NeuroWatchApplication implements AppShellConfigurator {
 
     public static void main(String[] args) {

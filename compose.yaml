@@ -1,5 +1,26 @@
 services:
 
+  kafka:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.5
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp=1
+      - --memory=1G
+      - --reserve-memory=0M
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://kafka:9092
+    ports: [ "9092:9092" ]
+    networks: [ neurowatch_net ]
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "rpk cluster info || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -36,6 +57,8 @@ services:
       - SPRING_DATA_MONGODB_DATABASE=neurowatch
       - JAVA_TOOL_OPTIONS=-Dsun.net.inetaddr.ttl=0
     depends_on:
+      kafka:
+        condition: service_healthy
       mongodb:
         condition: service_healthy
 

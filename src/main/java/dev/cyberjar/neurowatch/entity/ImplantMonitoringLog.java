@@ -1,5 +1,7 @@
 package dev.cyberjar.neurowatch.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import dev.cyberjar.neurowatch.utils.PointFromXYDeserializer;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
@@ -25,6 +27,8 @@ public class ImplantMonitoringLog {
     private double powerUsageUw;
     private double cpuUsagePct;
     private double neuralLatencyMs;
+
+    @JsonDeserialize(using = PointFromXYDeserializer.class)
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private Point location;
 

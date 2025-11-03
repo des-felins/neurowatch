@@ -22,7 +22,8 @@ public class MainLayout extends AppLayout {
         // drawer with navigation links
         RouterLink civLink = new RouterLink("Civilians", CivilianView.class);
         RouterLink logLink = new RouterLink("Implant Logs", ImplantLogView.class);
-        addToDrawer(new VerticalLayout(civLink, logLink));
+        RouterLink logsLiveLink = new RouterLink("Live Logs", LiveLogsView.class);
+        addToDrawer(new VerticalLayout(civLink, logLink, logsLiveLink));
     }
 
 }
