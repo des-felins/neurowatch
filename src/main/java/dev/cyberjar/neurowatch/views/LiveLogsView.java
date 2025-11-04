@@ -31,7 +31,6 @@ public class LiveLogsView extends VerticalLayout implements AfterNavigationObser
             new ListDataProvider<>(Collections.synchronizedList(buffer));
 
     private final Grid<ImplantMonitoringLog> grid = new Grid<>(ImplantMonitoringLog.class, false);
-    private final Button pauseBtn = new Button("Pause");
     private final Button clearBtn = new Button("Clear");
     private final Checkbox autoScroll = new Checkbox("Auto-scroll", true);
 
@@ -48,17 +47,11 @@ public class LiveLogsView extends VerticalLayout implements AfterNavigationObser
 
     private Component buildToolbar() {
 
-        //doesn't do anything, placeholder for now
-        pauseBtn.addClickListener(e -> {
-            paused = !paused;
-            pauseBtn.setText(paused ? "Resume" : "Pause");
-        });
-
         clearBtn.addClickListener(e -> {
             buffer.clear();
             data.refreshAll();
         });
-        HorizontalLayout bar = new HorizontalLayout(pauseBtn, clearBtn, autoScroll);
+        HorizontalLayout bar = new HorizontalLayout(clearBtn, autoScroll);
         bar.setAlignItems(Alignment.CENTER);
         bar.setWidthFull();
         bar.setJustifyContentMode(JustifyContentMode.START);

@@ -40,11 +40,11 @@ import 'Frontend/generated/jar-resources/ReactRouterOutletElement.tsx';
 
 const loadOnDemand = (key) => {
   const pending = [];
-  if (key === '32f2bc06a6c53941efa3aebc4403b53b967e25996cb6604c020b74b4143c3f23') {
-    pending.push(import('./chunks/chunk-2cd0c1ff3f29375756630fdf56043ce3fd1aca7112ecf5ae0214a88405a908e7.js'));
-  }
   if (key === '7f80b0f4b43768f46d47988398328c75693cbd5c59b87d21ce891c5059f6f6f0') {
     pending.push(import('./chunks/chunk-c04195dd45c556e4b011f87b5880c7c97fdde7c0fc891ef73fd6c2a50448cf67.js'));
+  }
+  if (key === '32f2bc06a6c53941efa3aebc4403b53b967e25996cb6604c020b74b4143c3f23') {
+    pending.push(import('./chunks/chunk-2cd0c1ff3f29375756630fdf56043ce3fd1aca7112ecf5ae0214a88405a908e7.js'));
   }
   return Promise.all(pending);
 }
