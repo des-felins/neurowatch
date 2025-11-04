@@ -21,7 +21,7 @@ public class LogIngestConfig {
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
-        return new ObjectMapper().findAndRegisterModules(); // JSR-310
+        return new ObjectMapper().findAndRegisterModules();
     }
 
     @Bean
