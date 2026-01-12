@@ -1,6 +1,5 @@
 package dev.cyberjar.neurowatch.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.cyberjar.neurowatch.utils.PointFromXYDeserializer;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -9,6 +8,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

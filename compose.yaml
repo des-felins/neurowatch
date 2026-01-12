@@ -44,7 +44,7 @@ services:
   neurowatch:
     build:
       context: .
-      dockerfile: ./dockerfiles/Dockerfile${SUFFIX}
+      dockerfile: ./dockerfiles/Dockerfile
       args:
         project: neurowatch
     networks:
@@ -52,9 +52,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATA_MONGODB_HOST=mongodb
-      - SPRING_DATA_MONGODB_PORT=27017
-      - SPRING_DATA_MONGODB_DATABASE=neurowatch
+      - SPRING_MONGODB_URI=mongodb://mongodb:27017/neurowatch
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=kafka:9092
       - JAVA_TOOL_OPTIONS=-Dsun.net.inetaddr.ttl=0
     depends_on:
       kafka:

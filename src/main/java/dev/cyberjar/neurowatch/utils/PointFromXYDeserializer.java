@@ -1,21 +1,24 @@
 package dev.cyberjar.neurowatch.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.geo.Point;
 
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-public class PointFromXYDeserializer extends JsonDeserializer<Point> {
+public class PointFromXYDeserializer extends StdDeserializer<Point> {
+
+    public PointFromXYDeserializer() {
+        super(Point.class);
+    }
 
     @Override
-    public Point deserialize(JsonParser p, DeserializationContext context) throws IOException {
+    public Point deserialize(JsonParser p, DeserializationContext ctxt) {
+        JsonNode node = (JsonNode) p.readValueAsTree(); // Jackson 3: no getCodec()
 
-        JsonNode node = p.getCodec().readTree(p);
-        double x = node.get("x").asDouble();
-        double y = node.get("y").asDouble();
+        double x = node.path("x").asDouble();
+        double y = node.path("y").asDouble();
         return new Point(x, y);
     }
 }

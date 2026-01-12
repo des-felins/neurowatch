@@ -1,0 +1,17 @@
+FROM bellsoft/liberica-runtime-container:jre-25-cds-musl as optimizer
+WORKDIR /app
+COPY ./target/neurowatch-0.0.1-SNAPSHOT-spring-boot.jar app.jar
+RUN java -Djarmode=tools -jar /app/app.jar extract --layers --destination extracted
+
+FROM bellsoft/liberica-runtime-container:jre-25-cds-slim-musl
+
+ENTRYPOINT ["java", "-Dspring.aot.enabled=true", "-XX:SharedArchiveFile=application.jsa", "-jar", "/app/app.jar"]
+
+WORKDIR /app
+
+COPY --from=optimizer /app/extracted/dependencies/ ./
+COPY --from=optimizer /app/extracted/spring-boot-loader/ ./
+COPY --from=optimizer /app/extracted/snapshot-dependencies/ ./
+COPY --from=optimizer /app/extracted/application/ ./
+
+RUN java -Dspring.aot.enabled=true -XX:ArchiveClassesAtExit=./application.jsa -Dspring.context.exit=onRefresh -jar /app/app.jar

@@ -6,8 +6,10 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.router.RouterLink;
+import jakarta.annotation.security.PermitAll;
 
 @Layout
+@PermitAll
 public class MainLayout extends AppLayout {
 
     public MainLayout() {

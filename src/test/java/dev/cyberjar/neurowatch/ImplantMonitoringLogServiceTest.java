@@ -1,6 +1,5 @@
 package dev.cyberjar.neurowatch;
 
-import dev.cyberjar.neurowatch.NeuroWatchApplication;
 import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
 import dev.cyberjar.neurowatch.entity.MonitoringStats;
 import dev.cyberjar.neurowatch.service.ImplantMonitoringLogService;
