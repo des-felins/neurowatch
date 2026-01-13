@@ -50,11 +50,11 @@ import 'react-router';
 import 'react';
 const loadOnDemand = (key) => {
   const pending = [];
-  if (key === '7f80b0f4b43768f46d47988398328c75693cbd5c59b87d21ce891c5059f6f6f0') {
-    pending.push(import('./chunks/chunk-e8c11e71582227011ada5244c165ec2676eb873c67e54e9576f89c0dfb65c510.js'));
-  }
   if (key === '32f2bc06a6c53941efa3aebc4403b53b967e25996cb6604c020b74b4143c3f23') {
     pending.push(import('./chunks/chunk-e552e36da171d02ff065802fc38892db987b87b45f09d0bf3ec89ed6ff44bf66.js'));
+  }
+  if (key === '7f80b0f4b43768f46d47988398328c75693cbd5c59b87d21ce891c5059f6f6f0') {
+    pending.push(import('./chunks/chunk-e8c11e71582227011ada5244c165ec2676eb873c67e54e9576f89c0dfb65c510.js'));
   }
   return Promise.all(pending);
 }

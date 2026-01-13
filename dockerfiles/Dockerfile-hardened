@@ -1,5 +1,19 @@
-FROM bellsoft/hardened-liberica-runtime-container:jre-25-glibc
+FROM bellsoft/hardened-liberica-runtime-container:jdk-25-glibc as builder
 WORKDIR /app
-COPY ./target/neurowatch-0.0.1-SNAPSHOT-spring-boot.jar app.jar
+ADD . /app/neurowatch
+RUN cd neurowatch && ./mvnw -Pproduction clean package
+
+FROM bellsoft/hardened-liberica-runtime-container:jre-25-glibc as optimizer
+WORKDIR /app
+COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
+RUN java -Djarmode=tools -jar /app/app.jar extract --layers --destination extracted
+
+FROM bellsoft/hardened-liberica-runtime-container:jre-25-glibc
+
+WORKDIR /app
+COPY --from=optimizer /app/extracted/dependencies/ ./
+COPY --from=optimizer /app/extracted/spring-boot-loader/ ./
+COPY --from=optimizer /app/extracted/snapshot-dependencies/ ./
+COPY --from=optimizer /app/extracted/application/ ./
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]

@@ -44,7 +44,7 @@ services:
   neurowatch:
     build:
       context: .
-      dockerfile: ./dockerfiles/Dockerfile
+      dockerfile: dockerfiles/Dockerfile
       args:
         project: neurowatch
     networks:

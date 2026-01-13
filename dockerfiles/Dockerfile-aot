@@ -19,4 +19,8 @@ COPY --from=optimizer /app/extracted/snapshot-dependencies/ ./
 COPY --from=optimizer /app/extracted/application/ ./
 EXPOSE 8080
 
-RUN java -Dspring.aot.enabled=true -XX:AOTCacheOutput=app.aot -Dspring.context.exit=onRefresh -jar /app/app.jar
+RUN java -Dspring.aot.enabled=true \
+         -Dspring.profiles.active=aot \
+         -XX:AOTCacheOutput=app.aot \
+         -Dspring.context.exit=onRefresh \
+         -jar /app/app.jar
