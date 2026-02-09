@@ -1,6 +1,8 @@
 package dev.cyberjar.neurowatch.repository.civilian;
 
 import dev.cyberjar.neurowatch.entity.Civilian;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -26,20 +28,38 @@ public class CivilianRepositoryCustomImpl implements CivilianRepositoryCustom {
     }
 
     @Override
-    public List<Civilian> findAllByImplantLotNumber(int lotNumber) {
+    public List<Civilian> findAllByImplantLotNumber(int lotNumber, Pageable pageable) {
+        Query query = new Query(Criteria.where("implants.lotNumber").is(lotNumber)).with(pageable);
+        return mongoTemplate.find(query, Civilian.class);
+    }
+
+    @Override
+    public List<Civilian> findAllByImplantLotNumberGreaterThanEqual(int lotNumber, Pageable pageable) {
+        Query query = new Query(Criteria.where("implants.lotNumber").gte(lotNumber)).with(pageable);
+        return mongoTemplate.find(query, Civilian.class);
+    }
+
+    @Override
+    public List<Civilian> findAllByImplantLotNumberLessThanEqual(int lotNumber, Pageable pageable) {
+        Query query = new Query(Criteria.where("implants.lotNumber").lte(lotNumber)).with(pageable);
+        return mongoTemplate.find(query, Civilian.class);
+    }
+
+    @Override
+    public long countByLotNumber(int lotNumber) {
         Query query = new Query(Criteria.where("implants.lotNumber").is(lotNumber));
-        return mongoTemplate.find(query, Civilian.class);
+        return mongoTemplate.count(query, Civilian.class);
     }
 
     @Override
-    public List<Civilian> findAllByImplantLotNumberGreaterThanEqual(int lotNumber) {
+    public long countByLotNumberGreaterThanEqual(int lotNumber) {
         Query query = new Query(Criteria.where("implants.lotNumber").gte(lotNumber));
-        return mongoTemplate.find(query, Civilian.class);
+        return mongoTemplate.count(query, Civilian.class);
     }
 
     @Override
-    public List<Civilian> findAllByImplantLotNumberLessThanEqual(int lotNumber) {
+    public long countByLotNumberLessThanEqual(int lotNumber) {
         Query query = new Query(Criteria.where("implants.lotNumber").lte(lotNumber));
-        return mongoTemplate.find(query, Civilian.class);
+        return mongoTemplate.count(query, Civilian.class);
     }
 }

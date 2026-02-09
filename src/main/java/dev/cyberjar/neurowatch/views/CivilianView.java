@@ -242,37 +242,52 @@ public class CivilianView extends VerticalLayout {
     private CallbackDataProvider<Civilian, Void> buildProvider() {
         return DataProvider.fromCallbacks(
 
-                /* fetch callback  (lazy paging) */
+                /* fetch callback */
                 query -> {
                     int offset = query.getOffset();
                     int limit = query.getLimit();
-                    return serviceQuery()
-                            .stream()
-                            .skip(offset)
-                            .limit(limit);
+                    return serviceFetch(offset, limit).stream();
                 },
 
                 /* count callback */
-                query -> serviceQuery().size()
+                _ -> (int) serviceCount()
         );
     }
 
-    private Collection<Civilian> serviceQuery() {
+    private Collection<Civilian> serviceFetch(int offset, int limit) {
 
         if (!lotN.isEmpty()) {
-            return civilianService.getCiviliansByLotNumber(lotN.getValue());
+            return civilianService.getCiviliansByLotNumber(offset, limit, lotN.getValue());
         }
         if (!lotGte.isEmpty()) {
-            return civilianService.getCiviliansByLotNumberGreaterOrEqual(lotGte.getValue());
+            return civilianService.getCiviliansByLotNumberGreaterOrEqual(offset, limit, lotGte.getValue());
         }
         if (!lotLte.isEmpty()) {
-            return civilianService.getCiviliansByLotNumberLessOrEqual(lotLte.getValue());
+            return civilianService.getCiviliansByLotNumberLessOrEqual(offset, limit, lotLte.getValue());
         }
         if (!nationalId.isEmpty()) {
-            return civilianService.getCivilianByNationalId(nationalId.getValue());
+            return civilianService.getCiviliansByNationalId(offset, limit, nationalId.getValue());
         }
-        // default: everything (but pageable)
-        return civilianService.getAllCivilians();
+
+        return civilianService.getCivilians(offset, limit);
+    }
+
+    private long serviceCount() {
+
+        if (!lotN.isEmpty()) {
+            return civilianService.countByLotNumber(lotN.getValue());
+        }
+        if (!lotGte.isEmpty()) {
+            return civilianService.countByLotNumberGreaterOrEqual(lotGte.getValue());
+        }
+        if (!lotLte.isEmpty()) {
+            return civilianService.countByLotNumberLessOrEqual(lotLte.getValue());
+        }
+        if (!nationalId.isEmpty()) {
+            return civilianService.countByNationalId(nationalId.getValue());
+        }
+
+        return civilianService.countCivilians();
     }
 
     private void refresh() {

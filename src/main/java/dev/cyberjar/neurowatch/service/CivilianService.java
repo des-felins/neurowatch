@@ -3,6 +3,9 @@ package dev.cyberjar.neurowatch.service;
 import dev.cyberjar.neurowatch.entity.Civilian;
 import dev.cyberjar.neurowatch.entity.Implant;
 import dev.cyberjar.neurowatch.repository.civilian.CivilianRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,26 +40,6 @@ public class CivilianService {
         return civilianRepository.findById(id).orElseThrow();
     }
 
-    public List<Civilian> getCivilianByNationalId(String nationalId) {
-        return civilianRepository.findByNationalId(nationalId);
-    }
-
-    public List<Civilian> getAllCivilians() {
-        return civilianRepository.findAll();
-    }
-
-    public List<Civilian> getCiviliansByLotNumber(int lotNumber) {
-        return civilianRepository.findAllByImplantLotNumber(lotNumber);
-    }
-
-    public List<Civilian> getCiviliansByLotNumberGreaterOrEqual(int lotNumber) {
-        return civilianRepository.findAllByImplantLotNumberGreaterThanEqual(lotNumber);
-    }
-
-    public List<Civilian> getCiviliansByLotNumberLessOrEqual(int lotNumber) {
-        return civilianRepository.findAllByImplantLotNumberLessThanEqual(lotNumber);
-    }
-
     public void deleteCivilian(Civilian civilian) {
         civilianRepository.delete(civilian);
     }
@@ -65,6 +48,55 @@ public class CivilianService {
         civilianRepository.deleteAll();
     }
 
+    public List<Civilian> getCiviliansByNationalId(int offset, int limit, String nationalId) {
+        Pageable pageable = getPageable(offset, limit);
+        return civilianRepository.findByNationalId(nationalId, pageable).getContent();
+    }
+
+    public List<Civilian> getCivilians(int offset, int limit) {
+        Pageable pageable = getPageable(offset, limit);
+        return civilianRepository.findAll(pageable).getContent();
+    }
+
+    public List<Civilian> getCiviliansByLotNumber(int offset, int limit, int lotNumber) {
+        Pageable pageable = getPageable(offset, limit);
+        return civilianRepository.findAllByImplantLotNumber(lotNumber, pageable);
+    }
+
+    public List<Civilian> getCiviliansByLotNumberGreaterOrEqual(int offset, int limit, int lotNumber) {
+        Pageable pageable = getPageable(offset, limit);
+        return civilianRepository.findAllByImplantLotNumberGreaterThanEqual(lotNumber, pageable);
+    }
+
+    public List<Civilian> getCiviliansByLotNumberLessOrEqual(int offset, int limit, int lotNumber) {
+        Pageable pageable = getPageable(offset, limit);
+        return civilianRepository.findAllByImplantLotNumberLessThanEqual(lotNumber, pageable);
+    }
+
+    public long countByLotNumber(Integer lotNumber) {
+        return civilianRepository.countByLotNumber(lotNumber);
+    }
+
+    public long countByLotNumberGreaterOrEqual(Integer lotNumber) {
+        return civilianRepository.countByLotNumberGreaterThanEqual(lotNumber);
+    }
+
+    public long countByLotNumberLessOrEqual(Integer lotNumber) {
+        return civilianRepository.countByLotNumberLessThanEqual(lotNumber);
+    }
+
+    public long countByNationalId(String nationalId) {
+        return civilianRepository.countByNationalId(nationalId);
+    }
+
+    public long countCivilians() {
+        return civilianRepository.count();
+    }
+
+    private Pageable getPageable(int offset, int limit) {
+        int page = offset / limit;
+        return PageRequest.of(page, limit, Sort.by("nationalId").ascending());
+    }
 
 }
 
