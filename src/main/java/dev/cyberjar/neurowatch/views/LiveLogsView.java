@@ -80,7 +80,6 @@ public class LiveLogsView extends VerticalLayout implements AfterNavigationObser
         // subscribe when the view becomes active
         subscription = bus.stream().subscribe(log ->
                 getUI().ifPresent(ui -> ui.access(() -> {
-                    if (!paused) {
                         buffer.addFirst(log);              // newest first
                         // trim to avoid unbounded growth (keep last 5000 rows)
                         if (buffer.size() > 5000) buffer.removeLast();
@@ -88,7 +87,6 @@ public class LiveLogsView extends VerticalLayout implements AfterNavigationObser
                         if (autoScroll.getValue() && !buffer.isEmpty()) {
                             grid.scrollToIndex(0);
                         }
-                    }
                 }))
         );
     }

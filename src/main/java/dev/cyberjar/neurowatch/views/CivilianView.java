@@ -19,6 +19,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -165,7 +166,7 @@ public class CivilianView extends VerticalLayout {
         Checkbox criminal = new Checkbox("Criminal record", civilian.isCriminalRecord());
         Checkbox surveil = new Checkbox("Under surveillance", civilian.isUnderSurveillance());
 
-        Binder<Civilian> binder = new Binder<>(Civilian.class);
+        Binder<Civilian> binder = new BeanValidationBinder<>(Civilian.class);
         binder.bind(name, Civilian::getLegalName, Civilian::setLegalName);
         binder.bind(criminal, Civilian::isCriminalRecord, Civilian::setCriminalRecord);
         binder.bind(surveil, Civilian::isUnderSurveillance, Civilian::setUnderSurveillance);
@@ -223,14 +224,14 @@ public class CivilianView extends VerticalLayout {
 
     private void configureFilters() {
 
-        HasValue.ValueChangeListener<? super AbstractField.ComponentValueChangeEvent<?, ?>> listener = e -> refresh();
+        HasValue.ValueChangeListener<? super AbstractField.ComponentValueChangeEvent<?, ?>> listener = _ -> refresh();
 
 
         lotGte.addValueChangeListener(listener);
         lotLte.addValueChangeListener(listener);
         lotN.addValueChangeListener(listener);
         nationalId.addValueChangeListener(listener);
-        clear.addClickListener(e -> {
+        clear.addClickListener(_ -> {
             lotGte.clear();
             lotLte.clear();
             lotN.clear();
