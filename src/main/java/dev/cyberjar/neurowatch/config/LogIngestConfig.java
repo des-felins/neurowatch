@@ -1,8 +1,8 @@
 package dev.cyberjar.neurowatch.config;
 
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.repository.implantmonitoring.ImplantMonitoringLogRepository;
-import dev.cyberjar.neurowatch.service.LiveLogBus;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
+import dev.cyberjar.neurowatch.implantmonitoringlog.repository.ImplantMonitoringLogRepository;
+import dev.cyberjar.neurowatch.implantmonitoringlog.LiveLogBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;

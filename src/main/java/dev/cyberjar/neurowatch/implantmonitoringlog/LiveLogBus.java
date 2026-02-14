@@ -1,6 +1,5 @@
-package dev.cyberjar.neurowatch.service;
+package dev.cyberjar.neurowatch.implantmonitoringlog;
 
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;

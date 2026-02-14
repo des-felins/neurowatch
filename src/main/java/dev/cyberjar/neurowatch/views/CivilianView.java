@@ -25,9 +25,9 @@ import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import dev.cyberjar.neurowatch.entity.Civilian;
-import dev.cyberjar.neurowatch.entity.Implant;
-import dev.cyberjar.neurowatch.service.CivilianService;
+import dev.cyberjar.neurowatch.civilian.Civilian;
+import dev.cyberjar.neurowatch.civilian.Implant;
+import dev.cyberjar.neurowatch.civilian.CivilianService;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.context.SecurityContextHolder;
 

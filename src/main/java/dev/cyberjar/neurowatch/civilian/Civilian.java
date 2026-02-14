@@ -1,4 +1,4 @@
-package dev.cyberjar.neurowatch.entity;
+package dev.cyberjar.neurowatch.civilian;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;

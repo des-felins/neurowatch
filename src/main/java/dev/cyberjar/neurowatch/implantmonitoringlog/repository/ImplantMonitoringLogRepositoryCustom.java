@@ -1,7 +1,7 @@
-package dev.cyberjar.neurowatch.repository.implantmonitoring;
+package dev.cyberjar.neurowatch.implantmonitoringlog.repository;
 
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.entity.MonitoringStats;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
+import dev.cyberjar.neurowatch.implantmonitoringlog.MonitoringStats;
 import org.springframework.data.geo.Point;
 
 import java.time.LocalDateTime;

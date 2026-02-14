@@ -3,7 +3,7 @@ package dev.cyberjar.neurowatch.config;
 import com.vaadin.flow.spring.security.VaadinAwareSecurityContextHolderStrategyConfiguration;
 import com.vaadin.flow.spring.security.VaadinSecurityConfigurer;
 import dev.cyberjar.neurowatch.security.CustomUserDetailsService;
-import dev.cyberjar.neurowatch.security.LoginView;
+import dev.cyberjar.neurowatch.views.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

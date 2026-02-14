@@ -1,7 +1,6 @@
-package dev.cyberjar.neurowatch.repository.civilian;
+package dev.cyberjar.neurowatch.civilian.repository;
 
-import dev.cyberjar.neurowatch.entity.Civilian;
-import org.springframework.data.domain.Page;
+import dev.cyberjar.neurowatch.civilian.Civilian;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

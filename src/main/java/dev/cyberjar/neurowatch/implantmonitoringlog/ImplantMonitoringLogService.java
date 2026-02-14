@@ -1,8 +1,6 @@
-package dev.cyberjar.neurowatch.service;
+package dev.cyberjar.neurowatch.implantmonitoringlog;
 
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.entity.MonitoringStats;
-import dev.cyberjar.neurowatch.repository.implantmonitoring.ImplantMonitoringLogRepository;
+import dev.cyberjar.neurowatch.implantmonitoringlog.repository.ImplantMonitoringLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

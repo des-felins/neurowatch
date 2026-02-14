@@ -12,8 +12,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.service.LiveLogBus;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
+import dev.cyberjar.neurowatch.implantmonitoringlog.LiveLogBus;
 import jakarta.annotation.security.PermitAll;
 import reactor.core.Disposable;
 

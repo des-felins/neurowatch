@@ -1,6 +1,5 @@
-package dev.cyberjar.neurowatch.repository.user;
+package dev.cyberjar.neurowatch.security;
 
-import dev.cyberjar.neurowatch.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

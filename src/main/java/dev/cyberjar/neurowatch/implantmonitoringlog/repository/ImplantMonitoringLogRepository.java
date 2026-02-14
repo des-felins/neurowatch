@@ -1,6 +1,6 @@
-package dev.cyberjar.neurowatch.repository.implantmonitoring;
+package dev.cyberjar.neurowatch.implantmonitoringlog.repository;
 
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDateTime;

@@ -1,14 +1,15 @@
 package dev.cyberjar.neurowatch;
 
-import dev.cyberjar.neurowatch.entity.Civilian;
-import dev.cyberjar.neurowatch.entity.Implant;
-import dev.cyberjar.neurowatch.repository.civilian.CivilianRepository;
+import dev.cyberjar.neurowatch.civilian.Civilian;
+import dev.cyberjar.neurowatch.civilian.Implant;
+import dev.cyberjar.neurowatch.civilian.repository.CivilianRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -61,14 +62,17 @@ class CivilianRepositoryTest {
 
     @Test
     void shouldFindCivilianByNationalId() {
-        List<Civilian> civilian = repository.findByNationalId("fI-88901036-kD");
+        List<Civilian> civilian = repository.findByNationalId(
+                        "fI-88901036-kD", PageRequest.of(0, 10))
+                .getContent();
         String name = "Rin Morse";
         assertEquals(name, civilian.getFirst().getLegalName());
     }
 
     @Test
     void shouldFindCiviliansByLotNumber() {
-        List<Civilian> civilians = repository.findAllByImplantLotNumber(536);
+        List<Civilian> civilians = repository.findAllByImplantLotNumber(
+                536, PageRequest.of(0, 10));
         int expected = 2;
         assertEquals(expected, civilians.size());
     }

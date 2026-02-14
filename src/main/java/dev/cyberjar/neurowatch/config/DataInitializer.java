@@ -1,12 +1,12 @@
 package dev.cyberjar.neurowatch.config;
 
-import dev.cyberjar.neurowatch.entity.Civilian;
-import dev.cyberjar.neurowatch.entity.Implant;
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.entity.User;
-import dev.cyberjar.neurowatch.repository.civilian.CivilianRepository;
-import dev.cyberjar.neurowatch.repository.implantmonitoring.ImplantMonitoringLogRepository;
-import dev.cyberjar.neurowatch.repository.user.UserRepository;
+import dev.cyberjar.neurowatch.civilian.Civilian;
+import dev.cyberjar.neurowatch.civilian.Implant;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
+import dev.cyberjar.neurowatch.security.User;
+import dev.cyberjar.neurowatch.civilian.repository.CivilianRepository;
+import dev.cyberjar.neurowatch.implantmonitoringlog.repository.ImplantMonitoringLogRepository;
+import dev.cyberjar.neurowatch.security.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

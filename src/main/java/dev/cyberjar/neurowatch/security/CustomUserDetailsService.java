@@ -1,7 +1,5 @@
 package dev.cyberjar.neurowatch.security;
 
-import dev.cyberjar.neurowatch.entity.User;
-import dev.cyberjar.neurowatch.repository.user.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

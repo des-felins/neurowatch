@@ -1,4 +1,4 @@
-package dev.cyberjar.neurowatch.repository.civilian;
+package dev.cyberjar.neurowatch.civilian;
 
 public interface CivilianSummary {
     String getLegalName();

@@ -1,4 +1,4 @@
-package dev.cyberjar.neurowatch.security;
+package dev.cyberjar.neurowatch.views;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;

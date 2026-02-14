@@ -9,9 +9,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import dev.cyberjar.neurowatch.entity.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.entity.MonitoringStats;
-import dev.cyberjar.neurowatch.service.ImplantMonitoringLogService;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
+import dev.cyberjar.neurowatch.implantmonitoringlog.MonitoringStats;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLogService;
 import jakarta.annotation.security.PermitAll;
 
 import java.time.LocalDate;

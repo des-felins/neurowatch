@@ -1,4 +1,4 @@
-package dev.cyberjar.neurowatch.entity;
+package dev.cyberjar.neurowatch.implantmonitoringlog;
 
 import dev.cyberjar.neurowatch.utils.PointFromXYDeserializer;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,8 +1,6 @@
-package dev.cyberjar.neurowatch.service;
+package dev.cyberjar.neurowatch.civilian;
 
-import dev.cyberjar.neurowatch.entity.Civilian;
-import dev.cyberjar.neurowatch.entity.Implant;
-import dev.cyberjar.neurowatch.repository.civilian.CivilianRepository;
+import dev.cyberjar.neurowatch.civilian.repository.CivilianRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

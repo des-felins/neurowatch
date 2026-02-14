@@ -1,4 +1,4 @@
-package dev.cyberjar.neurowatch.entity;
+package dev.cyberjar.neurowatch.security;
 
 import jakarta.validation.constraints.Email;
 import org.springframework.data.annotation.CreatedDate;
