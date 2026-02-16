@@ -6,7 +6,7 @@ import dev.cyberjar.neurowatch.civilian.CivilianService;
 import dev.cyberjar.neurowatch.civilian.Implant;
 import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
 import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLogService;
-import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -29,6 +29,8 @@ public class EvidenceBuilder {
 
     public IncidentAssessment triageIncident(IncidentSignal signal) {
         Map<String, List<ImplantMonitoringLog>> logs = extractLogs(signal);
+
+        System.out.println("Number of logs in total: " + logs.size());
 
         RiskLevel risk = classifyRisk(logs, signal);
 
@@ -90,8 +92,8 @@ public class EvidenceBuilder {
                 signal.to());
     }
 
-    private static Point toSpringPoint(double lon, double lat) {
-        return new Point(lon, lat);
+    private static GeoJsonPoint toSpringPoint(double lon, double lat) {
+        return new GeoJsonPoint(lon, lat);
     }
 
     private AffectedImplant toAffectedImplant(

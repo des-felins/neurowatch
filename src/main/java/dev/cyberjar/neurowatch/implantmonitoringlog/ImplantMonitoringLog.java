@@ -1,16 +1,14 @@
 package dev.cyberjar.neurowatch.implantmonitoringlog;
 
-import dev.cyberjar.neurowatch.utils.PointFromXYDeserializer;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import tools.jackson.databind.annotation.JsonDeserialize;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 @Document(collection = "implant_logs")
@@ -23,14 +21,13 @@ public class ImplantMonitoringLog {
     private String civilianNationalId;
     private String implantSerialNumber;
     @CreatedDate
-    private LocalDateTime timestamp;
+    private Instant timestamp;
     private double powerUsageUw;
     private double cpuUsagePct;
     private double neuralLatencyMs;
 
-    @JsonDeserialize(using = PointFromXYDeserializer.class)
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-    private Point location;
+    private GeoJsonPoint location;
 
     public ImplantMonitoringLog(String id,
                                 String implantSerialNumber,
@@ -38,25 +35,25 @@ public class ImplantMonitoringLog {
                                 double powerUsageUw,
                                 double cpuUsagePct,
                                 double neuralLatencyMs,
-                                Point location) {
+                                GeoJsonPoint location) {
         this.id = id;
         this.implantSerialNumber = implantSerialNumber;
         this.civilianNationalId = civilianNationalId;
         this.powerUsageUw = powerUsageUw;
         this.cpuUsagePct = cpuUsagePct;
         this.neuralLatencyMs = neuralLatencyMs;
-        timestamp = LocalDateTime.now();
+        timestamp = Instant.now();
         this.location = location;
     }
 
     public ImplantMonitoringLog(String id,
                                 String implantSerialNumber,
                                 String civilianNationalId,
-                                LocalDateTime timestamp,
+                                Instant timestamp,
                                 double powerUsageUw,
                                 double cpuUsagePct,
                                 double neuralLatencyMs,
-                                Point location) {
+                                GeoJsonPoint location) {
         this.id = id;
         this.implantSerialNumber = implantSerialNumber;
         this.civilianNationalId = civilianNationalId;
@@ -69,7 +66,7 @@ public class ImplantMonitoringLog {
 
 
     public ImplantMonitoringLog() {
-        timestamp = LocalDateTime.now();
+        timestamp = Instant.now();
     }
 
 
@@ -81,11 +78,11 @@ public class ImplantMonitoringLog {
         this.id = id;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -129,11 +126,11 @@ public class ImplantMonitoringLog {
         this.implantSerialNumber = implantSerialNumber;
     }
 
-    public Point getLocation() {
+    public GeoJsonPoint getLocation() {
         return location;
     }
 
-    public void setLocation(Point location) {
+    public void setLocation(GeoJsonPoint location) {
         this.location = location;
     }
 

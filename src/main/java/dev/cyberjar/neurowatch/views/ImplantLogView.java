@@ -14,8 +14,9 @@ import dev.cyberjar.neurowatch.implantmonitoringlog.MonitoringStats;
 import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLogService;
 import jakarta.annotation.security.PermitAll;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Route(value = "logs", layout = MainLayout.class)
@@ -23,6 +24,8 @@ import java.util.List;
 public class ImplantLogView extends VerticalLayout {
 
     private final ImplantMonitoringLogService logService;
+
+    private static final ZoneId USER_ZONE = ZoneId.of("Europe/Amsterdam");
 
     private final TextField serialN = new TextField("Serial #");
     private final DatePicker fromPicker = new DatePicker("From date");
@@ -69,9 +72,10 @@ public class ImplantLogView extends VerticalLayout {
             return;
         }
 
-        LocalDateTime from = fromPicker.getValue() == null
-                ? LocalDate.MIN.atStartOfDay()
-                : fromPicker.getValue().atStartOfDay();
+        Instant from = (fromPicker.getValue() == null
+                ? LocalDate.now(USER_ZONE).minusYears(100).atStartOfDay(USER_ZONE)
+                : fromPicker.getValue().atStartOfDay(USER_ZONE)
+        ).toInstant();
 
 
         List<ImplantMonitoringLog> logs =
@@ -81,7 +85,7 @@ public class ImplantLogView extends VerticalLayout {
 
         MonitoringStats s =
                 logService.aggregateStatsForImplantForPeriod(serial, from,
-                        LocalDateTime.now());
+                        Instant.now());
 
         if (s != null) {
             stats.setText(String.format(

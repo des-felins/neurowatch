@@ -2,10 +2,10 @@ package dev.cyberjar.neurowatch.config;
 
 import dev.cyberjar.neurowatch.civilian.Civilian;
 import dev.cyberjar.neurowatch.civilian.Implant;
-import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.security.User;
 import dev.cyberjar.neurowatch.civilian.repository.CivilianRepository;
+import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
 import dev.cyberjar.neurowatch.implantmonitoringlog.repository.ImplantMonitoringLogRepository;
+import dev.cyberjar.neurowatch.security.User;
 import dev.cyberjar.neurowatch.security.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,14 +33,15 @@ public class DataInitializer {
     public CommandLineRunner initData(UserRepository userRepository,
                                       CivilianRepository civilianRepository,
                                       ImplantMonitoringLogRepository logRepository,
-                                      PasswordEncoder passwordEncoder) {
+                                      PasswordEncoder passwordEncoder,
+                                      Clock clock) {
         return args -> {
             // Create default admin and user
             createDefaultUsers(userRepository, passwordEncoder);
 
             // Insert sample data if enabled
             if (createTestUsers) {
-                insertDataIntoCiviliansAndLogs(civilianRepository, logRepository);
+                insertDataIntoCiviliansAndLogs(civilianRepository, logRepository, clock);
             } else {
                 log.info("Sample data creation is disabled");
             }
@@ -77,7 +77,8 @@ public class DataInitializer {
     }
 
     private void insertDataIntoCiviliansAndLogs(CivilianRepository civilianRepository,
-                                                ImplantMonitoringLogRepository logRepository) {
+                                                ImplantMonitoringLogRepository logRepository,
+                                                Clock clock) {
 
         civilianRepository.deleteAll();
         logRepository.deleteAll();
@@ -86,13 +87,13 @@ public class DataInitializer {
         List<Civilian> civilians = new ArrayList<>();
         List<ImplantMonitoringLog> logs = new ArrayList<>();
 
-        Point NYC_MIDTOWN = new Point(-73.9855, 40.7580);
-        Point NYC_BROOKLYN = new Point(-73.9780, 40.6782);
-        Point NYC_QUEENS = new Point(-73.7949, 40.7282);
+        GeoJsonPoint NYC_MIDTOWN = new GeoJsonPoint(-73.9855, 40.7580);
+        GeoJsonPoint NYC_BROOKLYN = new GeoJsonPoint(-73.9780, 40.6782);
+        GeoJsonPoint NYC_QUEENS = new GeoJsonPoint(-73.7949, 40.7282);
 
-        Point BOS_DOWNTOWN = new Point(-71.0589, 42.3601);
-        Point PHL_CENTER = new Point(-75.1652, 39.9526);
-        Point DC_DOWNTOWN = new Point(-77.0369, 38.9072);
+        GeoJsonPoint BOS_DOWNTOWN = new GeoJsonPoint(-71.0589, 42.3601);
+        GeoJsonPoint PHL_CENTER = new GeoJsonPoint(-75.1652, 39.9526);
+        GeoJsonPoint DC_DOWNTOWN = new GeoJsonPoint(-77.0369, 38.9072);
 
         Random r = new Random(7331);
 
@@ -307,70 +308,69 @@ public class DataInitializer {
 
         if (logRepository.findAll().isEmpty()) {
 
-            // map implantSerial -> civilianNationalId (for log generation)
+
             Map<String, String> implantToCivilian = civilians.stream()
                     .flatMap(c -> c.getImplants().stream().map(im -> Map.entry(im.getSerialNumber(), c.getNationalId())))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            // --- Logs ---
-            // Create three “story arcs”:
-            // 1) baseline (normal telemetry spread across cities and time)
-            // 2) recall-likely (MechaMed limb lot 536 spikes)
-            // 3) attack-likely (multivendor CPU spikes in same geo/time window)
-
-            LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
+            Instant now = clock.instant();
 
             // Baseline: 3 days, every 3 hours, for all implants.
             for (Implant implant : implants) {
                 String natId = implantToCivilian.get(implant.getSerialNumber());
                 if (natId == null) continue;
 
-                Point city = pickHomeLocationForImplant(
+                GeoJsonPoint city = pickHomeLocationForImplant(
                         implant,
                         NYC_MIDTOWN,
                         PHL_CENTER,
                         BOS_DOWNTOWN,
                         DC_DOWNTOWN);
-                LocalDateTime start = now.minusDays(3);
+
+                // Instant start
+                Instant start = now.minus(Duration.ofDays(3));
 
                 addSeries(
                         logs, r,
                         implant.getSerialNumber(), natId,
-                        start, 24, 180, // 24 points, 180 min step = every 3 hours
-                        1.6, 18.0, 18.0, // power uW, cpu %, latency ms (baseline-ish)
-                        0.6, 6.0, 5.0,   // jitter
-                        city, 0.010       // location jitter
+                        start, 24, 180,
+                        1.6, 18.0, 18.0,
+                        0.6, 6.0, 5.0,
+                        city, 0.010
                 );
             }
 
-            // Baseline+ for a subset (more “rich” history): 7 days, every 4 hours
+            // Baseline+ for subset: 7 days, every 4 hours
             List<Implant> richerHistory = implants.subList(0, Math.min(10, implants.size()));
             for (Implant implant : richerHistory) {
                 String natId = implantToCivilian.get(implant.getSerialNumber());
                 if (natId == null) continue;
 
-                Point city = pickHomeLocationForImplant(implant,
+                GeoJsonPoint city = pickHomeLocationForImplant(implant,
                         NYC_MIDTOWN,
                         PHL_CENTER,
                         BOS_DOWNTOWN,
                         DC_DOWNTOWN);
-                LocalDateTime start = now.minusDays(7);
+
+                Instant start = now.minus(Duration.ofDays(7));
 
                 addSeries(
                         logs, r,
                         implant.getSerialNumber(), natId,
-                        start, 42, 240, // 42 points, 240 min step = every 4 hours for ~7 days
+                        start, 42, 240,
                         1.7, 20.0, 19.0,
                         0.7, 7.0, 6.0,
                         city, 0.012
                 );
             }
 
-            // Incident anchor time window for demos
-            LocalDateTime incidentBase = now.minusDays(1).withHour(2).withMinute(0);
+            //  Incident anchor: yesterday at 02:00 UTC
+            Instant incidentBase = ZonedDateTime.ofInstant(now, ZoneOffset.UTC)
+                    .minusDays(1)
+                    .withHour(2).withMinute(0).withSecond(0).withNano(0)
+                    .toInstant();
 
-            // Recall-likely cluster: lot 536 (MechaMed limb) spikes hard.
-            // Neural latency + CPU both high, tightly clustered.
+            // Recall-likely cluster: lot 536 spikes
             List<Implant> lot536 = implants.stream()
                     .filter(im -> im.getManufacturer().equals("MechaMed") && im.getLotNumber() == 536)
                     .toList();
@@ -382,17 +382,16 @@ public class DataInitializer {
                 addSeries(
                         logs, r,
                         implant.getSerialNumber(), natId,
-                        incidentBase.plusMinutes(10), 30, 2, // 30 points, every 2 min
-                        6.8, 92.0, 160.0,  // strong anomaly
+                        incidentBase.plus(Duration.ofMinutes(10)), 30, 2,
+                        6.8, 92.0, 160.0,
                         0.8, 4.0, 12.0,
                         NYC_BROOKLYN, 0.003
                 );
             }
 
-            // Attack-likely cluster: many different implants spike CPU in same place/time.
-            // CPU high, latency elevated but not insane, power mostly normal (looks like external load/interference).
+            // Attack-likely cluster
             List<Implant> attackVictims = implants.stream()
-                    .filter(im -> !(im.getManufacturer().equals("MechaMed") && im.getLotNumber() == 536)) // exclude recall group
+                    .filter(im -> !(im.getManufacturer().equals("MechaMed") && im.getLotNumber() == 536))
                     .limit(12)
                     .toList();
 
@@ -403,21 +402,26 @@ public class DataInitializer {
                 addSeries(
                         logs, r,
                         implant.getSerialNumber(), natId,
-                        incidentBase.plusMinutes(20), 20, 3, // 20 points, every 3 min
+                        incidentBase.plus(Duration.ofMinutes(20)), 20, 3,
                         2.2, 96.0, 85.0,
                         0.5, 3.0, 10.0,
                         NYC_QUEENS, 0.004
                 );
             }
 
-            // A single “distant weirdness” outlier to test false positive handling
+            // Outlier: fixed-ish time in UTC (5 days ago at 23:15 UTC)
             Implant outlier = implants.getLast();
             String outlierNat = implantToCivilian.get(outlier.getSerialNumber());
             if (outlierNat != null) {
+                Instant outlierStart = ZonedDateTime.ofInstant(now, ZoneOffset.UTC)
+                        .minusDays(5)
+                        .withHour(23).withMinute(15).withSecond(0).withNano(0)
+                        .toInstant();
+
                 addSeries(
                         logs, r,
                         outlier.getSerialNumber(), outlierNat,
-                        now.minusDays(5).withHour(23).withMinute(15), 25, 4,
+                        outlierStart, 25, 4,
                         3.5, 55.0, 200.0,
                         0.7, 8.0, 18.0,
                         PHL_CENTER, 0.006
@@ -428,7 +432,6 @@ public class DataInitializer {
 
         }
     }
-
 
 
     // Helper methods
@@ -453,9 +456,9 @@ public class DataInitializer {
         return String.format("%04d-%02d-%02d", year, month, day);
     }
 
-    private static Point pickHomeLocationForImplant(
+    private static GeoJsonPoint pickHomeLocationForImplant(
             Implant im,
-            Point nyc, Point bos, Point phl, Point dc
+            GeoJsonPoint nyc, GeoJsonPoint bos, GeoJsonPoint phl, GeoJsonPoint dc
     ) {
         if (im.getManufacturer().equals("MechaMed") && im.getLotNumber() == 536) return nyc;
 
@@ -473,7 +476,7 @@ public class DataInitializer {
             Random r,
             String implantSerial,
             String civilianNationalId,
-            LocalDateTime start,
+            Instant start,        // ✅ Instant
             int points,
             int stepMinutes,
             double basePowerUw,
@@ -482,17 +485,17 @@ public class DataInitializer {
             double powerJitter,
             double cpuJitter,
             double latencyJitter,
-            Point center,
+            GeoJsonPoint center,
             double locationJitter
     ) {
         for (int i = 0; i < points; i++) {
-            LocalDateTime ts = start.plusMinutes((long) i * stepMinutes);
+            Instant ts = start.plus(Duration.ofMinutes((long) i * stepMinutes)); // ✅ Instant math
 
             double power = clampMin(basePowerUw + randSigned(r) * powerJitter, 0.0);
             double cpu = clamp(baseCpuPct + randSigned(r) * cpuJitter, 0.0, 100.0);
             double latency = clampMin(baseLatencyMs + randSigned(r) * latencyJitter, 0.0);
 
-            Point loc = jitterPoint(center, r, locationJitter);
+            GeoJsonPoint loc = jitterPoint(center, r, locationJitter);
 
             logs.add(new ImplantMonitoringLog(
                     null,
@@ -506,11 +509,10 @@ public class DataInitializer {
             ));
         }
     }
-
-    private static Point jitterPoint(Point center, Random r, double maxDelta) {
+    private static GeoJsonPoint jitterPoint(GeoJsonPoint center, Random r, double maxDelta) {
         double dx = randSigned(r) * maxDelta;
         double dy = randSigned(r) * maxDelta;
-        return new Point(center.getX() + dx, center.getY() + dy);
+        return new GeoJsonPoint(center.getX() + dx, center.getY() + dy);
     }
 
     private static double randSigned(Random r) {

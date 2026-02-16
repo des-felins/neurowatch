@@ -8,9 +8,7 @@ import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 
 @Component
 public class IncidentSignalExtractor {
@@ -33,7 +31,7 @@ public class IncidentSignalExtractor {
         - lon is a number in [-180, 180]
         - lat is a number in [-90, 90]
         - radiusMeters is a number in meters. If missing, leave null.
-        - from/to are ISO-8601 LocalDateTime (e.g. 2026-02-02T02:00:00)
+        - from/to MUST be ISO-8601 UTC Instants ending with 'Z' (e.g. 2026-02-16T12:05:28Z)
         - metric is one of: neuralLatencyMs, cpuUsagePct, powerUsageUw
         - threshold is a finite number
 
@@ -53,9 +51,11 @@ public class IncidentSignalExtractor {
 
         var converter = new BeanOutputConverter<>(IncidentSignal.class);
 
-        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), USER_ZONE);
+        Instant nowUtc = clock.instant();
+        ZonedDateTime nowLocal = nowUtc.atZone(USER_ZONE);
 
-        String system = (CHAT_PROMPT.formatted(now, USER_ZONE) + "\n" + converter.getFormat());
+        String system = (CHAT_PROMPT.formatted(nowUtc.toString(), nowLocal.toString())
+                + "\n" + converter.getFormat());
 
         String content = chatClient.prompt()
                 .system(system)

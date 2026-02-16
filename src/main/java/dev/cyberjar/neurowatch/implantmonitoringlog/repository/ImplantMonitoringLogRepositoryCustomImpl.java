@@ -5,15 +5,15 @@ import dev.cyberjar.neurowatch.implantmonitoringlog.MonitoringStats;
 import org.bson.Document;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class ImplantMonitoringLogRepositoryCustomImpl implements ImplantMonitori
     }
 
     @Override
-    public MonitoringStats aggregateStats(String serialNumber, LocalDateTime from, LocalDateTime to) {
+    public MonitoringStats aggregateStats(String serialNumber, Instant from, Instant to) {
         MatchOperation match = Aggregation.match(Criteria.where("implantSerialNumber").is(serialNumber)
                 .and("timestamp").gte(from).lte(to));
 
@@ -52,10 +52,10 @@ public class ImplantMonitoringLogRepositoryCustomImpl implements ImplantMonitori
     }
 
     @Override
-    public Map<String, List<ImplantMonitoringLog>> findLogsByAreaAndTimeGrouped(Point center,
+    public Map<String, List<ImplantMonitoringLog>> findLogsByAreaAndTimeGrouped(GeoJsonPoint center,
                                                                                 double maxDistanceMeters,
-                                                                                LocalDateTime from,
-                                                                                LocalDateTime to) {
+                                                                                Instant from,
+                                                                                Instant to) {
 
         NearQuery nearQuery = NearQuery.near(center)
                 .maxDistance(new Distance(maxDistanceMeters / 1000.0, Metrics.KILOMETERS))

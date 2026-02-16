@@ -1,13 +1,10 @@
 package dev.cyberjar.neurowatch.implantmonitoringlog;
 
 import dev.cyberjar.neurowatch.implantmonitoringlog.repository.ImplantMonitoringLogRepository;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Positive;
-import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -24,20 +21,20 @@ public class ImplantMonitoringLogService {
         return implantMonitoringLogRepository.findByImplantSerialNumber(serialNumber);
     }
 
-    public List<ImplantMonitoringLog> findByImplantSerialNumberAndAfter(String serialNumber, LocalDateTime timestamp) {
+    public List<ImplantMonitoringLog> findByImplantSerialNumberAndAfter(String serialNumber, Instant timestamp) {
         return implantMonitoringLogRepository.findByImplantSerialNumberAndTimestampAfter(serialNumber, timestamp);
     }
 
     public MonitoringStats aggregateStatsForImplantForPeriod(String serialNumber,
-                                                             LocalDateTime from, LocalDateTime to) {
+                                                             Instant from, Instant to) {
         return implantMonitoringLogRepository.aggregateStats(serialNumber, from, to);
     }
 
     public Map<String, List<ImplantMonitoringLog>> findLogsByAreaAndTime(
-            Point center,
+            GeoJsonPoint center,
             double maxDistanceMeters,
-            LocalDateTime from,
-            LocalDateTime to) {
+            Instant from,
+            Instant to) {
 
         return implantMonitoringLogRepository.findLogsByAreaAndTimeGrouped(
                 center,
