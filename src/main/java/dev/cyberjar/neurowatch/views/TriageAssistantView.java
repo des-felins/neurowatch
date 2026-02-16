@@ -10,7 +10,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.Route;
-import dev.cyberjar.neurowatch.ai.EvidenceBuilder;
 import dev.cyberjar.neurowatch.ai.IncidentTriageService;
 import dev.cyberjar.neurowatch.ai.domain.EstimatedBlastRadius;
 import dev.cyberjar.neurowatch.ai.domain.IncidentCase;

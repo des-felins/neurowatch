@@ -41,6 +41,11 @@ public class HypothesisBuilder {
         var converter = new BeanOutputConverter<>(RootCauseHypothesis.class);
         String system = CHAT_PROMT + "\n" + converter.getFormat();
 
+        List<AffectedImplant> topAffected;
+        if (affectedImplants == null) {
+            topAffected = List.of();
+        } else topAffected = affectedImplants.stream().limit(10).toList();
+
         String content = chatClient.prompt()
                 .system(system)
                 .user(u -> u.text("""
@@ -55,9 +60,9 @@ public class HypothesisBuilder {
                                 """)
                         .param("signal", signal)
                         .param("assessment", assessment)
-                        .param("evidence", affectedImplants.stream().limit(10).toList()))
-                .call()
-                .content();
+                        .param("affectedImplants", topAffected))
+                        .call()
+                        .content();
 
         assert content != null;
         return converter.convert(content);
