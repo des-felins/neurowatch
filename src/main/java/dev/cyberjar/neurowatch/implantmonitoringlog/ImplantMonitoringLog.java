@@ -51,7 +51,8 @@ public class ImplantMonitoringLog {
 
     public ImplantMonitoringLog(String id,
                                 String implantSerialNumber,
-                                String civilianNationalId, LocalDateTime timestamp,
+                                String civilianNationalId,
+                                LocalDateTime timestamp,
                                 double powerUsageUw,
                                 double cpuUsagePct,
                                 double neuralLatencyMs,
