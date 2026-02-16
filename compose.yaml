@@ -1,5 +1,19 @@
 services:
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-svq
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama/data:/root/.ollama
+      - ./ollama/init:/init
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1
+      - OLLAMA_DEBUG=2
+    entrypoint: [ "/bin/sh", "/init/run_ollama.sh" ]
+    restart: unless-stopped
+
   kafka:
     image: docker.redpanda.com/redpandadata/redpanda:v24.1.5
     command:

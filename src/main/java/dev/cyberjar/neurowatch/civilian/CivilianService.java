@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CivilianService {
@@ -96,6 +97,9 @@ public class CivilianService {
         return PageRequest.of(page, limit, Sort.by("nationalId").ascending());
     }
 
+    public Optional<Civilian> findCivilianByImplantSerialNumber(String serialNumber) {
+        return civilianRepository.findCivilianByImplantSerialNumber(serialNumber);
+    }
 }
 
 

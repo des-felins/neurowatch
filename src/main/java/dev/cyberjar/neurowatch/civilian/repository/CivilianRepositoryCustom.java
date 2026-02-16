@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface CivilianRepositoryCustom {
 
-    Optional<Civilian> findAByImplantSerialNumber(String implantSerialNumber);
+    Optional<Civilian> findCivilianByImplantSerialNumber(String implantSerialNumber);
 
     List<Civilian> findAllByImplantLotNumber(int lotNumber, Pageable pageable);
 

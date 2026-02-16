@@ -21,7 +21,7 @@ public class CivilianRepositoryCustomImpl implements CivilianRepositoryCustom {
 
 
     @Override
-    public Optional<Civilian> findAByImplantSerialNumber(String implantSerialNumber) {
+    public Optional<Civilian> findCivilianByImplantSerialNumber(String implantSerialNumber) {
         Query query = new Query(Criteria.where("implants.serialNumber").is(implantSerialNumber));
         return Optional.ofNullable(mongoTemplate.findOne(query, Civilian.class));
     }

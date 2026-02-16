@@ -3,10 +3,14 @@ package dev.cyberjar.neurowatch.implantmonitoringlog.repository;
 import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
 import dev.cyberjar.neurowatch.implantmonitoringlog.MonitoringStats;
 import org.bson.Document;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.NearQuery;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -52,15 +56,17 @@ public class ImplantMonitoringLogRepositoryCustomImpl implements ImplantMonitori
                                                                                 double maxDistanceMeters,
                                                                                 LocalDateTime from,
                                                                                 LocalDateTime to) {
-        MatchOperation match = Aggregation.match(
-                Criteria.where("location").nearSphere(center)
-                        .maxDistance(maxDistanceMeters)
-                        .and("timestamp").gte(from).lte(to));
+
+        NearQuery nearQuery = NearQuery.near(center)
+                .maxDistance(new Distance(maxDistanceMeters / 1000.0, Metrics.KILOMETERS))
+                .query(Query.query(Criteria.where("timestamp").gte(from).lte(to)));
+
+        GeoNearOperation geoNear = Aggregation.geoNear(nearQuery, "distance");
 
         GroupOperation group = Aggregation.group("implantSerialNumber")
                 .push(Aggregation.ROOT).as("logs");
 
-        Aggregation aggregation = Aggregation.newAggregation(match, group);
+        Aggregation aggregation = Aggregation.newAggregation(geoNear, group);
 
         AggregationResults<Document> results = mongoTemplate.aggregate(
                 aggregation, "implant_logs", Document.class);
