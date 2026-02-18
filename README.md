@@ -6,7 +6,7 @@ Spring Boot application built with Maven designed for showcasing various solutio
 
 - User authentication and authorization with Spring Security
 - Persistence layer in MongoDB
-- Live logs ingest with Apache Kafka Binder
+- Smart assistant with Spring AI 
 - Vaadin-based frontend
 - Containerized deployment with Docker
 
@@ -17,9 +17,9 @@ Spring Boot application built with Maven designed for showcasing various solutio
 
 ## Running the Application Locally
 
-1. Build and start the MongoDB container:
+1. Build and start the MongoDB and Ollama containers:
    ```bash
-   docker-compose up -d mongodb
+   docker-compose up -d mongodb ollama
    ```
 
 2. Build and run the application:
@@ -37,31 +37,15 @@ There are two default users with different privileges you can use to log in: adm
    docker-compose up -d
    ```
 
-## Accessing the Live Logs Functionality
+## Testing the smart Assistant
 
-The application supports real-time ingest of implant monitoring logs from Kafka and displays them in a Live Logs Vaadin view with server push.
+The smart assistant implements the implant incident triage workflow. 
+A user reports unusual telemetry in a place and time window, and the system turns that into a full incident case 
+with risk level, affected devices, likely cause, and a detailed containment plan.
 
-What it means:
+Test data already includes logs with anomalies so that the assistant has something to work with.
+Yo test this functionality, go to /assistant and paste this input:
 
-- Kafka ingest (Spring Cloud Stream): The app consumes messages from topic neurowatch.logs.raw.
-- Mongo persistence: Every log is stored in implant_logs.
-- Real-time UI (“Live Logs”): A dedicated Vaadin view (/live-logs) streams incoming logs to the browser using @Push.
-
-The Log Generator resides in a separate repo: https://github.com/des-felins/log-generator
-
-### How to use it: 
-
-1. As the main app and the log generator are in separate compose.yml files, you must first create a shared network:
-
-```bash
-docker network create neurowatch_net
-```
-
-2. Start the MongoDB instance, Red Panda, and the NeuroWatch application first:
-
-```bash
-docker compose up -d
-```
-
-3. Clone and start the log generator.
-4. The logs will be available at http://localhost:8080/live-logs
+   ```text
+   Investigate abnormal telemetry near lat 40.75217 lon -73.98759, radius 6000m, last 36 hours, metric neuralLatencyMs, threshold 20. Provide a containment plan.
+   ```
