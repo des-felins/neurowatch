@@ -118,10 +118,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream-binder-kafka</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
@@ -138,6 +134,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <image>
+                        <builder>bellsoft/buildpacks.builder:glibc</builder>
+                        <env>
+                            <BP_JVM_VERSION>25</BP_JVM_VERSION>
+                            <BP_MAVEN_ACTIVE_PROFILES>production</BP_MAVEN_ACTIVE_PROFILES>
+                            <BP_MAVEN_SKIP_TESTS>true</BP_MAVEN_SKIP_TESTS>
+                        </env>
+                    </image>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -155,6 +161,39 @@
                         <goals>
                             <goal>process-aot</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>make-app-sbom</id>
+                        <phase>package</phase>
+                        <goals>
+                            <!-- Single-module: makeBom ; multi-module app: makeAggregateBom -->
+                            <goal>makeBom</goal>
+                        </goals>
+                        <configuration>
+                            <!-- App/runtime-focused scopes -->
+                            <includeCompileScope>true</includeCompileScope>
+                            <includeRuntimeScope>true</includeRuntimeScope>
+                            <includeTestScope>false</includeTestScope>
+                            <includeProvidedScope>false</includeProvidedScope>
+                            <includeSystemScope>false</includeSystemScope>
+
+                            <!-- Output -->
+                            <outputFormat>json</outputFormat>
+                            <outputName>app-sbom.cdx</outputName>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+
+                            <!-- Optional -->
+                            <schemaVersion>1.6</schemaVersion>
+                            <includeBomSerialNumber>true</includeBomSerialNumber>
+                            <verbose>false</verbose>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
