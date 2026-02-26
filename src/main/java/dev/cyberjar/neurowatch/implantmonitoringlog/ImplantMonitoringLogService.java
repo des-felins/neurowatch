@@ -55,17 +55,20 @@ public class ImplantMonitoringLogService {
                 to);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public ImportResult importLogsForCivilian(String civilianId, InputStream yamlStream) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ImportResult importLogsForCivilian(String implantSerialNumber, InputStream yamlStream) {
 
-        Civilian civilian = civilianService.getCivilianById(civilianId);
+        Civilian civilian = civilianService.findCivilianByImplantSerialNumber(implantSerialNumber)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Civilian not found for implant serial number: " + implantSerialNumber));
+
 
         // CAUTION! Intentionally unsafe for CVE demo purposes (SnakeYAML Constructor)
         Yaml yaml = new Yaml(new Constructor(SeedLogsData.class));
         SeedLogsData seed = yaml.load(yamlStream);
 
         if (seed == null || seed.getLogs() == null || seed.getLogs().isEmpty()) {
-            return new ImportResult(civilianId, 0);
+            return new ImportResult(civilian.getId(), 0);
         }
 
         List<ImplantMonitoringLog> logs = new ArrayList<>();
@@ -93,7 +96,7 @@ public class ImplantMonitoringLogService {
 
         implantMonitoringLogRepository.saveAll(logs);
 
-        return new ImportResult(civilianId, logs.size());
+        return new ImportResult(civilian.getId(), logs.size());
     }
 
     public record ImportResult(String civilianId, int logsImported) {

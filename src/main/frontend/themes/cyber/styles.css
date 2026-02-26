@@ -40,3 +40,26 @@ vaadin-grid::part(row):hover {
 vaadin-button:hover::part(label) {
     text-shadow: 0 0 6px #00e5ff;
 }
+
+/* Make Upload behave like a toolbar item */
+vaadin-upload.inline-upload {
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+/* Remove the drop label area */
+vaadin-upload.inline-upload::part(drop-label) {
+    display: none;
+}
+
+/* Hide the file list (so it doesn’t add height) */
+vaadin-upload.inline-upload::part(file-list) {
+    display: none;
+}
+
+/* Remove spacing around primary buttons area */
+vaadin-upload.inline-upload::part(primary-buttons) {
+    padding: 0;
+    margin: 0;
+}
