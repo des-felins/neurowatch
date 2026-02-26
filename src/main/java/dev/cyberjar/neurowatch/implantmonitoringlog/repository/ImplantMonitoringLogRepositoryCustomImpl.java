@@ -1,7 +1,7 @@
 package dev.cyberjar.neurowatch.implantmonitoringlog.repository;
 
 import dev.cyberjar.neurowatch.implantmonitoringlog.ImplantMonitoringLog;
-import dev.cyberjar.neurowatch.implantmonitoringlog.MonitoringStats;
+import dev.cyberjar.neurowatch.implantmonitoringlog.dto.MonitoringStats;
 import org.bson.Document;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;

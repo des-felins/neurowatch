@@ -1,4 +1,4 @@
-package dev.cyberjar.neurowatch.implantmonitoringlog;
+package dev.cyberjar.neurowatch.implantmonitoringlog.dto;
 
 public record MonitoringStats(String implantSerialNumber,
                               double avgPowerUsageUw,

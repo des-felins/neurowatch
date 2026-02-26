@@ -13,13 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.InputStream;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,25 +28,15 @@ public class DataInitializer {
     @Value("${app.create-test-users:true}")
     private boolean createTestUsers;
 
-    @Value("${app.seed.yaml.enabled:false}")
-    private boolean yamlSeedEnabled;
-
     @Bean
     public CommandLineRunner initData(UserRepository userRepository,
                                       CivilianRepository civilianRepository,
                                       ImplantMonitoringLogRepository logRepository,
                                       PasswordEncoder passwordEncoder,
-                                      Clock clock,
-                                      @Value("${app.seed.yaml.location:classpath:/seed-data.yaml}") Resource seedResource) {
+                                      Clock clock) {
         return args -> {
             // Create default admin and user
             createDefaultUsers(userRepository, passwordEncoder);
-
-            // 1) Try YAML seed (only if enabled + resource exists)
-            if (yamlSeedEnabled && seedFromYamlIfPresent(seedResource, civilianRepository, logRepository)) {
-                log.info("Data initialization completed (seeded from YAML)");
-                return;
-            }
 
             // Insert sample data if enabled
             if (createTestUsers) {
@@ -62,101 +48,6 @@ public class DataInitializer {
             log.info("Data initialization completed");
 
         };
-    }
-
-    private boolean seedFromYamlIfPresent(Resource resource, CivilianRepository civilianRepository, ImplantMonitoringLogRepository logRepository) {
-        try {
-
-            if (!resource.exists()) {
-                log.info("No YAML seed found at {} (skipping)", resource);
-                return false;
-            }
-
-            log.info("Loading seed data from {}", resource);
-
-            // Intentionally unsafe for CVE demo purposes:
-            // CVE-2022-1471 is related to SnakeYAML deserialization risks with Constructor.
-            Yaml yaml = new Yaml(new Constructor(SeedData.class));
-
-            SeedData seed;
-            try (InputStream in = resource.getInputStream()) {
-                seed = yaml.load(in);
-            }
-
-            if (seed == null) {
-                log.warn("YAML seed file was empty (skipping)");
-                return false;
-            }
-
-            civilianRepository.deleteAll();
-            logRepository.deleteAll();
-
-            if (seed.getCivilians() != null) {
-                List<Civilian> civilians = new ArrayList<>();
-                for (SeedCivilian sc : seed.getCivilians()) {
-                    List<Implant> implants = new ArrayList<>();
-                    if (sc.getImplants() != null) {
-                        for (SeedImplant si : sc.getImplants()) {
-                            implants.add(new Implant(
-                                    si.getType(),
-                                    si.getModel(),
-                                    si.getVersion(),
-                                    si.getManufacturer(),
-                                    si.getLotNumber(),
-                                    si.getSerialNumber(),
-                                    si.getInstalledAt()
-                            ));
-                        }
-                    }
-
-                    civilians.add(new Civilian(
-                            null,
-                            sc.getLegalName(),
-                            sc.getNationalId(),
-                            sc.getBirthDate(),
-                            sc.isCriminalRecord(),
-                            sc.isUnderSurveillance(),
-                            implants
-                    ));
-                }
-                civilianRepository.saveAll(civilians);
-                log.info("Seeded {} civilians from YAML", civilians.size());
-            }
-
-            if (seed.getLogs() != null) {
-                List<ImplantMonitoringLog> logs = new ArrayList<>();
-                for (SeedLog sl : seed.getLogs()) {
-                    Instant ts = (sl.getTimestamp() == null || sl.getTimestamp().isBlank())
-                            ? Instant.now()
-                            : Instant.parse(sl.getTimestamp());
-
-                    GeoJsonPoint location = null;
-                    if (sl.getLocation() != null) {
-                        // GeoJsonPoint(x=lon, y=lat)
-                        location = new GeoJsonPoint(sl.getLocation().getLongitude(), sl.getLocation().getLatitude());
-                    }
-
-                    logs.add(new ImplantMonitoringLog(
-                            null,
-                            sl.getImplantSerialNumber(),
-                            sl.getCivilianNationalId(),
-                            ts,
-                            sl.getPowerUsageUw(),
-                            sl.getCpuUsagePct(),
-                            sl.getNeuralLatencyMs(),
-                            location
-                    ));
-                }
-                logRepository.saveAll(logs);
-                log.info("Seeded {} implant logs from YAML", logs.size());
-            }
-
-            return true;
-        } catch (Exception e) {
-            log.warn("Failed to load YAML seed from {} (falling back to generated data): {}",
-                    resource, e.toString());
-            return false;
-        }
     }
 
     private void createDefaultUsers(UserRepository userRepository,
@@ -617,6 +508,7 @@ public class DataInitializer {
             ));
         }
     }
+
     private static GeoJsonPoint jitterPoint(GeoJsonPoint center, Random r, double maxDelta) {
         double dx = randSigned(r) * maxDelta;
         double dy = randSigned(r) * maxDelta;
@@ -642,11 +534,21 @@ public class DataInitializer {
         private List<SeedCivilian> civilians;
         private List<SeedLog> logs;
 
-        public List<SeedCivilian> getCivilians() { return civilians; }
-        public void setCivilians(List<SeedCivilian> civilians) { this.civilians = civilians; }
+        public List<SeedCivilian> getCivilians() {
+            return civilians;
+        }
 
-        public List<SeedLog> getLogs() { return logs; }
-        public void setLogs(List<SeedLog> logs) { this.logs = logs; }
+        public void setCivilians(List<SeedCivilian> civilians) {
+            this.civilians = civilians;
+        }
+
+        public List<SeedLog> getLogs() {
+            return logs;
+        }
+
+        public void setLogs(List<SeedLog> logs) {
+            this.logs = logs;
+        }
     }
 
     public static class SeedCivilian {
@@ -657,23 +559,53 @@ public class DataInitializer {
         private boolean underSurveillance;
         private List<SeedImplant> implants;
 
-        public String getLegalName() { return legalName; }
-        public void setLegalName(String legalName) { this.legalName = legalName; }
+        public String getLegalName() {
+            return legalName;
+        }
 
-        public String getNationalId() { return nationalId; }
-        public void setNationalId(String nationalId) { this.nationalId = nationalId; }
+        public void setLegalName(String legalName) {
+            this.legalName = legalName;
+        }
 
-        public String getBirthDate() { return birthDate; }
-        public void setBirthDate(String birthDate) { this.birthDate = birthDate; }
+        public String getNationalId() {
+            return nationalId;
+        }
 
-        public boolean isCriminalRecord() { return criminalRecord; }
-        public void setCriminalRecord(boolean criminalRecord) { this.criminalRecord = criminalRecord; }
+        public void setNationalId(String nationalId) {
+            this.nationalId = nationalId;
+        }
 
-        public boolean isUnderSurveillance() { return underSurveillance; }
-        public void setUnderSurveillance(boolean underSurveillance) { this.underSurveillance = underSurveillance; }
+        public String getBirthDate() {
+            return birthDate;
+        }
 
-        public List<SeedImplant> getImplants() { return implants; }
-        public void setImplants(List<SeedImplant> implants) { this.implants = implants; }
+        public void setBirthDate(String birthDate) {
+            this.birthDate = birthDate;
+        }
+
+        public boolean isCriminalRecord() {
+            return criminalRecord;
+        }
+
+        public void setCriminalRecord(boolean criminalRecord) {
+            this.criminalRecord = criminalRecord;
+        }
+
+        public boolean isUnderSurveillance() {
+            return underSurveillance;
+        }
+
+        public void setUnderSurveillance(boolean underSurveillance) {
+            this.underSurveillance = underSurveillance;
+        }
+
+        public List<SeedImplant> getImplants() {
+            return implants;
+        }
+
+        public void setImplants(List<SeedImplant> implants) {
+            this.implants = implants;
+        }
     }
 
     public static class SeedImplant {
@@ -685,26 +617,61 @@ public class DataInitializer {
         private String serialNumber;
         private String installedAt; // yyyy-MM-dd
 
-        public String getType() { return type; }
-        public void setType(String type) { this.type = type; }
+        public String getType() {
+            return type;
+        }
 
-        public String getModel() { return model; }
-        public void setModel(String model) { this.model = model; }
+        public void setType(String type) {
+            this.type = type;
+        }
 
-        public String getVersion() { return version; }
-        public void setVersion(String version) { this.version = version; }
+        public String getModel() {
+            return model;
+        }
 
-        public String getManufacturer() { return manufacturer; }
-        public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+        public void setModel(String model) {
+            this.model = model;
+        }
 
-        public int getLotNumber() { return lotNumber; }
-        public void setLotNumber(int lotNumber) { this.lotNumber = lotNumber; }
+        public String getVersion() {
+            return version;
+        }
 
-        public String getSerialNumber() { return serialNumber; }
-        public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
+        public void setVersion(String version) {
+            this.version = version;
+        }
 
-        public String getInstalledAt() { return installedAt; }
-        public void setInstalledAt(String installedAt) { this.installedAt = installedAt; }
+        public String getManufacturer() {
+            return manufacturer;
+        }
+
+        public void setManufacturer(String manufacturer) {
+            this.manufacturer = manufacturer;
+        }
+
+        public int getLotNumber() {
+            return lotNumber;
+        }
+
+        public void setLotNumber(int lotNumber) {
+            this.lotNumber = lotNumber;
+        }
+
+        public String getSerialNumber() {
+            return serialNumber;
+        }
+
+        public void setSerialNumber(String serialNumber) {
+            this.serialNumber = serialNumber;
+        }
+
+        public String getInstalledAt() {
+            return installedAt;
+        }
+
+        public void setInstalledAt(String installedAt) {
+            this.installedAt = installedAt;
+        }
     }
 
     public static class SeedLog {
@@ -716,37 +683,82 @@ public class DataInitializer {
         private double neuralLatencyMs;
         private SeedLocation location;
 
-        public String getCivilianNationalId() { return civilianNationalId; }
-        public void setCivilianNationalId(String civilianNationalId) { this.civilianNationalId = civilianNationalId; }
+        public String getCivilianNationalId() {
+            return civilianNationalId;
+        }
 
-        public String getImplantSerialNumber() { return implantSerialNumber; }
-        public void setImplantSerialNumber(String implantSerialNumber) { this.implantSerialNumber = implantSerialNumber; }
+        public void setCivilianNationalId(String civilianNationalId) {
+            this.civilianNationalId = civilianNationalId;
+        }
 
-        public String getTimestamp() { return timestamp; }
-        public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+        public String getImplantSerialNumber() {
+            return implantSerialNumber;
+        }
 
-        public double getPowerUsageUw() { return powerUsageUw; }
-        public void setPowerUsageUw(double powerUsageUw) { this.powerUsageUw = powerUsageUw; }
+        public void setImplantSerialNumber(String implantSerialNumber) {
+            this.implantSerialNumber = implantSerialNumber;
+        }
 
-        public double getCpuUsagePct() { return cpuUsagePct; }
-        public void setCpuUsagePct(double cpuUsagePct) { this.cpuUsagePct = cpuUsagePct; }
+        public String getTimestamp() {
+            return timestamp;
+        }
 
-        public double getNeuralLatencyMs() { return neuralLatencyMs; }
-        public void setNeuralLatencyMs(double neuralLatencyMs) { this.neuralLatencyMs = neuralLatencyMs; }
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
 
-        public SeedLocation getLocation() { return location; }
-        public void setLocation(SeedLocation location) { this.location = location; }
+        public double getPowerUsageUw() {
+            return powerUsageUw;
+        }
+
+        public void setPowerUsageUw(double powerUsageUw) {
+            this.powerUsageUw = powerUsageUw;
+        }
+
+        public double getCpuUsagePct() {
+            return cpuUsagePct;
+        }
+
+        public void setCpuUsagePct(double cpuUsagePct) {
+            this.cpuUsagePct = cpuUsagePct;
+        }
+
+        public double getNeuralLatencyMs() {
+            return neuralLatencyMs;
+        }
+
+        public void setNeuralLatencyMs(double neuralLatencyMs) {
+            this.neuralLatencyMs = neuralLatencyMs;
+        }
+
+        public SeedLocation getLocation() {
+            return location;
+        }
+
+        public void setLocation(SeedLocation location) {
+            this.location = location;
+        }
     }
 
     public static class SeedLocation {
         private double latitude;
         private double longitude;
 
-        public double getLatitude() { return latitude; }
-        public void setLatitude(double latitude) { this.latitude = latitude; }
+        public double getLatitude() {
+            return latitude;
+        }
 
-        public double getLongitude() { return longitude; }
-        public void setLongitude(double longitude) { this.longitude = longitude; }
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        public double getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
+        }
     }
 
 }
