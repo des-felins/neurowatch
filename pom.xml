@@ -127,6 +127,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!--   Caution! Vulnerable dependency for demonstrating CVE management process -->
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.33</version>
+        </dependency>
     </dependencies>
 
     <build>

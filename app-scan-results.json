@@ -1,0 +1,9 @@
+Total 1 package affected by 1 known vulnerability (0 Critical, 1 High, 0 Medium, 0 Low, 0 Unknown) from 1 ecosystem.
+1 vulnerability can be fixed.
+
+
++-------------------------------------+------+-----------+--------------------+---------+---------------+--------------------------+
+| OSV URL                             | CVSS | ECOSYSTEM | PACKAGE            | VERSION | FIXED VERSION | SOURCE                   |
++-------------------------------------+------+-----------+--------------------+---------+---------------+--------------------------+
+| https://osv.dev/GHSA-mjmj-j48q-9wg2 | 8.3  | Maven     | org.yaml:snakeyaml | 1.33    | 2.0           | target/app-sbom.cdx.json |
++-------------------------------------+------+-----------+--------------------+---------+---------------+--------------------------+
