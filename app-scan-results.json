@@ -1,9 +1,12 @@
-Total 1 package affected by 1 known vulnerability (0 Critical, 1 High, 0 Medium, 0 Low, 0 Unknown) from 1 ecosystem.
-1 vulnerability can be fixed.
+Total 3 packages affected by 4 known vulnerabilities (0 Critical, 4 High, 0 Medium, 0 Low, 0 Unknown) from 1 ecosystem.
+4 vulnerabilities can be fixed.
 
 
-+-------------------------------------+------+-----------+--------------------+---------+---------------+--------------------------+
-| OSV URL                             | CVSS | ECOSYSTEM | PACKAGE            | VERSION | FIXED VERSION | SOURCE                   |
-+-------------------------------------+------+-----------+--------------------+---------+---------------+--------------------------+
-| https://osv.dev/GHSA-mjmj-j48q-9wg2 | 8.3  | Maven     | org.yaml:snakeyaml | 1.33    | 2.0           | target/app-sbom.cdx.json |
-+-------------------------------------+------+-----------+--------------------+---------+---------------+--------------------------+
++-------------------------------------+------+-----------+-----------------------------------------+---------+---------------+--------------------------+
+| OSV URL                             | CVSS | ECOSYSTEM | PACKAGE                                 | VERSION | FIXED VERSION | SOURCE                   |
++-------------------------------------+------+-----------+-----------------------------------------+---------+---------------+--------------------------+
+| https://osv.dev/GHSA-72hv-8253-57qq | 8.7  | Maven     | com.fasterxml.jackson.core:jackson-core | 2.20.2  | 2.21.1        | target/app-sbom.cdx.json |
+| https://osv.dev/GHSA-mjmj-j48q-9wg2 | 8.3  | Maven     | org.yaml:snakeyaml                      | 1.33    | 2.0           | target/app-sbom.cdx.json |
+| https://osv.dev/GHSA-6v53-7c9g-w56r | 8.7  | Maven     | tools.jackson.core:jackson-core         | 3.0.3   | 3.1.0         | target/app-sbom.cdx.json |
+| https://osv.dev/GHSA-72hv-8253-57qq | 8.7  | Maven     | tools.jackson.core:jackson-core         | 3.0.3   | 3.1.0         | target/app-sbom.cdx.json |
++-------------------------------------+------+-----------+-----------------------------------------+---------+---------------+--------------------------+

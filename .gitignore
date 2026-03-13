@@ -5,6 +5,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 ollama/data/
+ollama/.DS_Store
 
 ### STS ###
 .apt_generated
@@ -33,3 +34,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+src/main/frontend/generated/

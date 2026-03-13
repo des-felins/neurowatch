@@ -1,0 +1,8 @@
+.git
+node_modules
+target
+build
+dist
+tmp
+.cache
+ollama/data/

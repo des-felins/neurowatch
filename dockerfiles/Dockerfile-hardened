@@ -11,9 +11,16 @@ RUN java -Djarmode=tools -jar /app/app.jar extract --layers --destination extrac
 FROM bellsoft/hardened-liberica-runtime-container:jre-25-glibc
 
 WORKDIR /app
+RUN set -o errexit -o nounset \
+    && echo "Adding liberica user and group" \
+    && addgroup -Sg 1000 liberica \
+    && adduser -SG liberica -u 1000 liberica \
+
 COPY --from=optimizer /app/extracted/dependencies/ ./
 COPY --from=optimizer /app/extracted/spring-boot-loader/ ./
 COPY --from=optimizer /app/extracted/snapshot-dependencies/ ./
 COPY --from=optimizer /app/extracted/application/ ./
+
+USER liberica
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
