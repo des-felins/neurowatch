@@ -1,9 +1,9 @@
-FROM eclipse-temurin:25-jdk as builder
+FROM eclipse-temurin:25.0.3_9-jdk as builder
 WORKDIR /app
 COPY . /app/neurowatch
 RUN cd neurowatch && ./mvnw -Pproduction -Dmaven.test.skip=true clean package
 
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:25.0.3_9-jre
 WORKDIR /app
 COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
 EXPOSE 8080
