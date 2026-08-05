@@ -10,7 +10,7 @@ COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
 RUN java -Djarmode=tools -jar /app/app.jar extract --layers --destination extracted
 
 
-FROM bellsoft/hardened-liberica-runtime-container:jre-25-musl
+FROM bellsoft/hardened-liberica-runtime-container:jre-25.0.4_9-musl
 
 WORKDIR /app
 COPY --from=optimizer /app/extracted/dependencies/ ./
