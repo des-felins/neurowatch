@@ -1,10 +1,10 @@
-FROM bellsoft/liberica-runtime-container:jdk-21-musl as builder
+FROM bellsoft/liberica-runtime-container:jdk-21.0.12_10-musl as builder
 RUN apk add --no-cache nodejs npm
 WORKDIR /app
 ADD . /app/neurowatch
 RUN cd neurowatch && ./mvnw -Pproduction clean package
 
-FROM bellsoft/liberica-runtime-container:jre-21-crac-cds-stream-musl
+FROM bellsoft/liberica-runtime-container:jre-21.0.12_11-crac-cds-stream-musl
 
 WORKDIR /app
 COPY --from=builder /app/neurowatch/target/neurowatch-*.jar app.jar
